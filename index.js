@@ -1,46 +1,29 @@
-var http = require("http");
-var fs = require("fs");
+const express = require("express");
+const app = express();
 
-http.createServer(function (req, res) {
-    res.setHeader("Content-Type", "text/html");
+// const hostname = "127.0.0.1";
+const port = 8080;
 
-    let path = "./views/";
+app.get("/", (req, res) => {
+    res.sendFile("./views/index.html", { root: __dirname });
+});
 
-    switch (req.url) {
-        case "/":
-            path += "index.html";
-            res.statusCode = 200;
-            break;
+app.get("/about", (req, res) => {
+    res.sendFile("./views/about.html", { root: __dirname });
+});
 
-        case "/about":
-            path += "about.html";
-            res.statusCode = 200;
-            break;
+app.get("/contact-me", (req, res) => {
+    res.sendFile("./views/contact-me.html", { root: __dirname });
+});
+// redirects
+app.get("/contact", (req, res) => {
+    res.redirect("/contact-me");
+});
 
-        case "/contact-me":
-            path += "contact-me.html";
-            res.statusCode = 200;
-            break;
-        case "/contact":
-            res.statusCode = 301;
-            res.setHeader("Location", "/contact-me");
-            res.end();
-            break;
+app.use((req, res) => {
+    res.status(404).sendFile("./views/404.html", { root: __dirname });
+});
 
-        default:
-            path += "404.html";
-            res.statusCode = 404;
-            break;
-    }
-
-    fs.readFile(path, function (err, data) {
-        if (err) {
-            console.log(err);
-            res.end();
-        } else {
-            // res.writeHead(200, { "Content-Type": "text/html" });
-            // res.write(data);
-            return res.end(data);
-        }
-    });
-}).listen(8080);
+app.listen(port, () => {
+    console.log(`Example app listening on port ${port}!`);
+});
